@@ -1,0 +1,53 @@
+from inputs import get_inputs
+from calc_SAE_dimensions import SAE_dimensions
+from calc_wingloading import calc_WL
+from calc_wingsizing import wingsizing
+from calc_winggeometry import winggeometry
+from calc_stabiliser_and_controlsurfacesizing import stabiliser_and_controlsurfacesizing
+from calc_geometry_correction import correct_geometry
+from calc_pmaxandTW import pmax_and_TW
+from calc_dprop import calc_dprop
+from calc_weightestimation import weight_estimation
+
+def process():
+    params, results = get_inputs()
+    results['WTO_guess'] = params['WTO']
+    results['L_fuse'] = params['L_fuse_initial']
+    results['a'] = params['a_initial']
+    results['b'] = params['b_initial']
+    calc_WL(params, results)
+    max_iterations = 30
+    change = 0.0075
+    damping = 0.5
+    damping_geo = 0.5
+    tol = 1e-4
+    for i in range(0, max_iterations, 1):
+        wingsizing(params, results)
+        winggeometry(params, results)
+        stabiliser_and_controlsurfacesizing(params, results, tol=tol)
+        correct_geometry(params, results, damping_geo=damping_geo, tol=tol)
+        pmax_and_TW(params, results)
+        calc_dprop(params, results)
+        weight_estimation(params, results)
+        SAE_dimensions(params, results, tol=tol)
+        W_computed = results['W_computed']
+        W_guess = results['WTO_guess']
+        delta = (abs(W_computed - W_guess)) / W_guess
+        tail_ok = (results['l_tail'] - results['L_fuse']) <= tol
+        sae_ok = results.get('sae_ok', False)
+        if delta <= change and tail_ok and sae_ok:
+            break
+
+        new_guess = W_guess + damping * (W_computed - W_guess)
+        if new_guess > params['WTO_max']:
+            new_guess = params['WTO_max']
+        elif new_guess < params['WTO_min']:
+            new_guess = params['WTO_min']
+        results['WTO_guess'] = new_guess
+
+    return results
+
+if __name__ == '__main__':
+    from report import main as print_report
+    results = process()
+    print_report(results=results)
