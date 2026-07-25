@@ -1,3 +1,4 @@
+import calc_stabiliser_and_controlsurfacesizing
 from inputs import get_inputs
 from calc_SAE_dimensions import SAE_dimensions
 from calc_wingloading import calc_WL
@@ -20,22 +21,21 @@ def process():
     change = 0.0075
     damping = 0.5
     damping_geo = 0.5
-    tol = 1e-4
+    delta = 1e-4
     for i in range(0, max_iterations, 1):
         wingsizing(params, results)
         winggeometry(params, results)
-        stabiliser_and_controlsurfacesizing(params, results, tol=tol)
-        correct_geometry(params, results, damping_geo=damping_geo, tol=tol)
+        stabiliser_and_controlsurfacesizing(params, results)
+        correct_geometry(params, results)
         pmax_and_TW(params, results)
         calc_dprop(params, results)
         weight_estimation(params, results)
-        SAE_dimensions(params, results, tol=tol)
+        SAE_dimensions(params, results)
         W_computed = results['W_computed']
         W_guess = results['WTO_guess']
         delta = (abs(W_computed - W_guess)) / W_guess
-        tail_ok = (results['l_tail'] - results['L_fuse']) <= tol
-        sae_ok = results.get('sae_ok', False)
-        if delta <= change and tail_ok and sae_ok:
+        geometry_check = results.get('geometry_feasible', False)
+        if delta <= change and geometry_check == True:
             break
 
         new_guess = W_guess + damping * (W_computed - W_guess)

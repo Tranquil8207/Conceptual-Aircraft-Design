@@ -23,6 +23,9 @@ def get_inputs():
         'n_blade'               : 2,           # Number of blades
         'n_prop'                : 1,           # Number of propellers
 
+        #SAE specific inputs
+        'SAE_limit'             : 3.81,      # Greatest possible value of L+W+H of the aircraft (m)
+
         # Constants
         'k_rho_wing'            : 0.00125,
         'k_rho_ht'              : 0.0175,

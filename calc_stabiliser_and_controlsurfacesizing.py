@@ -1,4 +1,5 @@
-def stabiliser_and_controlsurfacesizing(params,results, tol=1e-4):
+def stabiliser_and_controlsurfacesizing(params,results):
+    delta = 1e-4
     if results['b']>results['a']:
         raise Exception("b must be smaller than a")
     '''Not needed for SAE regs
@@ -8,7 +9,7 @@ def stabiliser_and_controlsurfacesizing(params,results, tol=1e-4):
     root = (results['S_wing'])*((params['Vht']*results['C_wing_adj'])+(params['Vvt']*params['ms']))/(results['a']+results['b'])
     results['l_tail'] = root**0.5
     results['tail_length_excess'] = results['l_tail'] - results['L_fuse']
-    results['tail_fit_ok'] = results['tail_length_excess'] <= tol
+    results['tail_fit_ok'] = results['tail_length_excess'] <= delta
     results['S_ht'] = params['Vht']*results['S_wing']*results['C_wing_adj']/results['l_tail']
     results['S_vt'] = params['Vvt']*results['S_wing']*params['ms']/results['l_tail']
     results['span_ht'] = (params['AR_ht']*results['S_ht'])**0.5
