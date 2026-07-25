@@ -120,14 +120,30 @@ def build_report(results):
 
     # --- Propulsion / performance ---
     prop_rows = [
-        _row("Thrust-to-weight TW", results.get("TW"), "—", 5),
+        _row("Thrust-to-weight TW (takeoff, dto/Ld-based)", results.get("TW"), "—", 5),
         _row("Stall speed (TO ref) v_TO_stall", results.get("v_TO_stall"), "m/s", 3),
         _row("Liftoff speed Vlo", results.get("Vlo"), "m/s", 3),
-        _row("Max power pmax", results.get("pmax"), "—", 4),
+        _row("Governing power case", results.get("governing_case"), "", 0),
+        _row("Max power pmax (envelope-governing)", results.get("pmax"), "W", 4),
         _row("ESC weight coeff (pmax/Vmax)", results.get("esc_wt_coeff"), "—", 4),
         _row("Propeller diameter dprop", results.get("dprop"), "m", 4),
     ]
     _print_section("5. PROPULSION & TAKEOFF", prop_rows)
+
+    # --- Full flight-envelope power sizing ---
+    envelope_rows = [
+        _row("WS stall limit (upper bound)", results.get("WS_stall_limit"), "N/m^2", 3),
+        _row("T/W climb", results.get("TW_climb"), "—", 5),
+        _row("T/W cruise", results.get("TW_cruise"), "—", 5),
+        _row("T/W ceiling", results.get("TW_ceiling"), "—", 5),
+        _row("T/W turn", results.get("TW_turn"), "—", 5),
+        _row("P takeoff", results.get("P_takeoff"), "W", 3),
+        _row("P climb", results.get("P_climb"), "W", 3),
+        _row("P cruise", results.get("P_cruise"), "W", 3),
+        _row("P ceiling", results.get("P_ceiling"), "W", 3),
+        _row("P turn", results.get("P_turn"), "W", 3),
+    ]
+    _print_section("5b. FULL FLIGHT-ENVELOPE POWER SIZING", envelope_rows)
 
     # --- Airframe geometry / SAE ---
     remaining = results.get("remaining_space")
