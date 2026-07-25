@@ -6,8 +6,7 @@ from calc_wingsizing import wingsizing
 from calc_winggeometry import winggeometry
 from calc_stabiliser_and_controlsurfacesizing import stabiliser_and_controlsurfacesizing
 from calc_geometry_correction import correct_geometry
-from calc_pmaxandTW import pmax_and_TW
-from calc_powerrequirement import power_requirement
+from calc_pmaxandTW import pmax,power_requirement
 from calc_dprop import calc_dprop
 from calc_weightestimation import weight_estimation
 
@@ -40,7 +39,7 @@ def process(x=None):
         winggeometry(params, results)
         stabiliser_and_controlsurfacesizing(params, results)
         correct_geometry(params, results)
-        pmax_and_TW(params, results)
+        pmax(params, results)
         power_requirement(params, results)
         calc_dprop(params, results)
         weight_estimation(params, results)

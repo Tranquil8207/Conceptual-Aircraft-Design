@@ -7,7 +7,7 @@ def SAE_dimensions(params,results):
     results['ac_H'] = max(results['a'], results['b'])
     results['LHW_total'] = results['adjusted_L'] + results['ac_W'] + results['ac_H']
 
-    sae_limit = params['sae_limit']
+    sae_limit = params['SAE_limit']
     results['sae_ok'] = results['LHW_total'] <= sae_limit + delta
     if results['LHW_total'] > sae_limit:
         excess = results['LHW_total'] - sae_limit

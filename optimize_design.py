@@ -11,6 +11,9 @@ for that design point (process(x=...)) -- this mirrors how MATLAB's
 rca_constraints.m calls run_conceptual_design(req, x, refData) fresh on
 every call. It's more function evaluations than a cached approach, but
 keeps this a faithful, simple port; revisit if the optimizer is slow.
+-------------------End of Maxon's changes--------------------------
+addendum(from anish) no major code changes
+just changed how we get the results and params dicts into the file
 """
 
 from scipy.optimize import minimize
@@ -19,12 +22,14 @@ from process import process
 from calc_wingloading import calc_WL
 from inputs import get_inputs
 
-G = 9.81
+params,results = get_inputs()
+
+G = params['g']
 
 # --- SAE DDC RCA rulebook bounds ---
-WINGSPAN_MAX = 72 * 0.0254        # m (72 in)
-MTOW_MIN_N = 2.0 * G              # N (payload excluded, per define_requirements.m)
-MTOW_MAX_N = 4.0 * G              # N
+WINGSPAN_MAX = params['ms']       # m (72 in)
+MTOW_MIN_N = params['WTO_min']              # N (payload excluded, per define_requirements.m)
+MTOW_MAX_N = params['WTO_max']              # N
 
 # Landing-distance-feasible wing loading ceiling (independent of span) --
 # this is the same quantity calc_WL.py's 0.80 heuristic is 80% of. Kept
@@ -32,9 +37,8 @@ MTOW_MAX_N = 4.0 * G              # N
 # violate your landing-distance requirement; MATLAB's rca_constraints.m
 # doesn't have this check (it has no landing-distance module), so this is
 # a Python-side addition, not a strict port.
-_params0, _results0 = get_inputs()
-calc_WL(_params0, _results0)
-WL_LANDING_MAX = _results0['WLfinal'] / 0.80
+calc_WL(params, results)
+WL_LANDING_MAX = results['WLfinal'] / 0.80
 
 # Search bounds -- tune to your actual feasible range
 WS_BOUNDS = (10.0, WL_LANDING_MAX)

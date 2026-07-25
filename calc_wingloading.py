@@ -1,3 +1,5 @@
+import math
+
 def calc_WL(params,results):
     A1 = 1.15*3*(2/(params['rho_air']*params['clmax']))**0.5
     B1 = 1.3225/(params['g']*params['rho_air']*params['clmax']*params['RFC'])
@@ -5,6 +7,10 @@ def calc_WL(params,results):
     WLmax = quad**2
     results['WLfinal'] = WLmax*0.80
 
+'''
+addendum(from anish - 11:36 25/07/2026)
+everything below this is dead code right?
+if yes delete it all, there is no point keeping it around
 #New constraints
 
 def SA_stall_limit(W_S, params):
@@ -39,7 +45,7 @@ def TW_climb(W_S, params):
     
     return TW_climb
 
-def TW_cruise(W_S, params):
+def TW_cruise(W_S, params,k):
     # Cruise, eq. (2-52)
     q_cruise = 0.5 * params['rho_air'] * params['V_cruise']**2
     TW_cruise = q_cruise * (params['CD_min'] / W_S) + (k / q_cruise) * W_S
@@ -61,4 +67,4 @@ def TW_turn(W_S, params):
     q_turn = 0.5 * params['rho_air'] * params['V_cruise']**2   # turn performed at cruise speed
     TW_turn = q_turn * (params['CD_min'] / W_S + k * (n_turn / q_turn)**2 * W_S)
     
-    return TW_turn
+    return TW_turn'''
