@@ -11,9 +11,15 @@ def weight_estimation(params,results):
     W_prop = 670.644*(results['dprop'])**2.784'''
 
     '''Tyan Formulae'''
-    W_motor = params['F1'] * (results['pmax'] ** params['E1']) * (params['Vmax'] ** params['E2']) * results['pmax'] * params['g'] * 0.001
-    W_esc = params['F_esc'] * (results['pmax'] ** params['E_esc']) * params['g'] * 0.001
-    W_prop = (6.514e-3 * 1.0 * 15.0 * params['n_prop'] * (params['n_blade']**0.391) * ((results['dprop'] * results['pmax'] / (1000.0 * params['n_prop'])) ** 0.782)) * params['g'] * 0.001
+    p_ff = results.get('pmax',0)
+    p_vtol = results.get('Preq_VTOL',0)
+    Pmax = max(p_ff,p_vtol)
+    nprop = params['n_prop_FF'] + params['n_prop_lift']
+    W_motor_FF = params['F1'] * (results['pmax'] ** params['E1']) * (params['Vmax'] ** params['E2']) * results['pmax'] * params['g'] * 0.001
+    W_motor_lift = params['F1'] * (results['Preq_VTOL'] ** params['E1']) * (params['Vmax'] ** params['E2']) * results['Preq_VTOL'] * params['g'] * 0.001
+    W_motor = W_motor_lift + W_motor_FF
+    W_esc = params['F_esc'] * (Pmax ** params['E_esc']) * params['g'] * 0.001
+    W_prop = (6.514e-3 * 1.0 * 15.0 * nprop * (params['n_blade']**0.391) * ((results['dprop'] * Pmax / (1000.0 * nprop)) ** 0.782)) * params['g'] * 0.001
     '''Battery weight'''
     W_batt = 0.500*9.81
     

@@ -9,6 +9,9 @@ from calc_geometry_correction import correct_geometry
 from calc_pmaxandTW import pmax,power_requirement
 from calc_dprop import calc_dprop
 from calc_weightestimation import weight_estimation
+from VTOL_formulae.calc_TW_VTOL_and_helpers import TW_climb,Pmax_helpers
+from VTOL_formulae.calc_pmax_VTOL import Preq_VTOL
+from calc_optimalwingloading import ws_sweep_and_optimize
 
 def process(x=None):
     """Run one full sizing convergence loop.
@@ -19,6 +22,8 @@ def process(x=None):
         Leave as None for the original single-point behaviour.
     """
     params, results = get_inputs()
+    helper = {}
+
     if x is not None:
         params = dict(params)   # don't mutate the shared defaults
         params['ms'] = x[1]
@@ -37,10 +42,17 @@ def process(x=None):
     for i in range(0, max_iterations, 1):
         wingsizing(params, results)
         winggeometry(params, results)
+        if x is None:
+            ws_sweep_and_optimize(params, results)
+            wingsizing(params, results)
+            winggeometry(params, results)
         stabiliser_and_controlsurfacesizing(params, results)
         correct_geometry(params, results)
         pmax(params, results)
         power_requirement(params, results)
+        TW_climb(params, results, helper)
+        Pmax_helpers(params, results, helper)
+        Preq_VTOL(params, results, helper)
         calc_dprop(params, results)
         weight_estimation(params, results)
         SAE_dimensions(params, results)
@@ -57,7 +69,6 @@ def process(x=None):
         elif new_guess < params['WTO_min']:
             new_guess = params['WTO_min']
         results['WTO_guess'] = new_guess
-
     return results
 
 if __name__ == '__main__':

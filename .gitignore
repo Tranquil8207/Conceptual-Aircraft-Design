@@ -1,2 +1,6 @@
 # To ignore session archive files I keep, there is no need to commit them
 *.json
+.env
+.env.local
+.env.example
+*.pyc

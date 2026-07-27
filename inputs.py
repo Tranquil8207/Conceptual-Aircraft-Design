@@ -24,7 +24,25 @@ def get_inputs():
         'L_LG'                  : 0.15,         # Landing gear length (m)
         'dto'                   : 20,          # Takeoff distance (m)
         'n_blade'               : 2,           # Number of blades
-        'n_prop'                : 1,           # Number of propellers
+        'n_prop_FF'                : 1,           # Number of propellers
+        
+        # Full flight-envelope power sizing (climb/cruise/ceiling/turn) --
+        # placeholder values carried over from the MATLAB toolchain;
+        # replace with real mission numbers once available.
+        'V_stall'               : 10.0,             # Desired stall speed (m/s) [PLACEHOLDER]
+        'V_cruise'              : 18.0,             # Cruise speed (m/s) [PLACEHOLDER]
+        'climb_ROC'             : 3.0,              # Desired rate of climb (m/s) [PLACEHOLDER]
+        'ROC_ceiling'           : 0.5,              # ROC at service ceiling (m/s) [PLACEHOLDER]
+        'CD_min'                : 0.035,            # Min drag coeff, whole aircraft [PLACEHOLDER]
+        'e'                     : 0.8,               # Oswald efficiency factor [PLACEHOLDER]
+        'bank_angle'            : math.radians(30), # Design turn bank angle (rad) [PLACEHOLDER]
+        'sweep_c4'              : 0.0,               # Quarter-chord sweep, rad (straight wing)
+        'eta_prop'              : 0.75,             # Propeller efficiency, forward flight [PLACEHOLDER]
+        
+        # VTOL flight specific inputs
+        'RoC_VTOL'              : 1.0,               # Rate of climb for VTOL operation (m/s)
+        's_ratio'               : 1.3,              # Ratio of total aircraft surface area to wing area
+        'n_prop_lift'           : 4,                # Number of lift props
 
         #SAE specific inputs
         'SAE_limit'             : 3.81,      # Greatest possible value of L+W+H of the aircraft (m)
@@ -50,20 +68,10 @@ def get_inputs():
         'E2'                    : 0.1588,
         'F_esc'                 : 0.7383*(10**(-4)),
         'E_esc'                 : 0.8854,
-
-        # Full flight-envelope power sizing (climb/cruise/ceiling/turn) --
-        # placeholder values carried over from the MATLAB toolchain;
-        # replace with real mission numbers once available.
-        'V_stall'               : 10.0,             # Desired stall speed (m/s) [PLACEHOLDER]
-        'V_cruise'              : 18.0,             # Cruise speed (m/s) [PLACEHOLDER]
-        'climb_ROC'             : 3.0,              # Desired rate of climb (m/s) [PLACEHOLDER]
-        'ROC_ceiling'           : 0.5,              # ROC at service ceiling (m/s) [PLACEHOLDER]
-        'CD_min'                : 0.035,            # Min drag coeff, whole aircraft [PLACEHOLDER]
-        'e'                     : 0.8,               # Oswald efficiency factor [PLACEHOLDER]
-        'bank_angle'            : math.radians(30), # Design turn bank angle (rad) [PLACEHOLDER]
-        'sweep_c4'              : 0.0,               # Quarter-chord sweep, rad (straight wing)
-        'eta_prop'              : 0.75,             # Propeller efficiency, forward flight [PLACEHOLDER]
+        'FoM'                   : 0.7
     }
+        
+        
 
     results ={}
     return params, results
