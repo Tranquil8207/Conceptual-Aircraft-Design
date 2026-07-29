@@ -6,7 +6,6 @@ from process import process
 
 # Match process.py loop tolerances for status lines
 CHANGE = 0.0075
-TOL = 1e-4
 G = 9.81  # N per kg (same as inputs)
 
 
@@ -55,25 +54,13 @@ def build_report(results):
         delta = None
         weight_ok = False
 
-    l_tail = results.get("l_tail")
-    L_fuse = results.get("L_fuse")
-    if l_tail is not None and L_fuse is not None:
-        tail_ok = (l_tail - L_fuse) <= TOL
-    else:
-        tail_ok = bool(results.get("tail_fit_ok", False))
-
-    sae_ok = bool(results.get("sae_ok", False))
-    overall_ok = weight_ok and tail_ok and sae_ok
+    overall_ok = weight_ok
 
     # --- Convergence / status ---
     status_rows = [
         _row("Weight residual |W-Wguess|/Wguess", delta, "—", 4,
              f"limit {CHANGE}"),
         _row("Weight closed", weight_ok, "", 0),
-        _row("Tail fit (l_tail <= L_fuse)", tail_ok, "", 0),
-        _row("SAE L+W+H ok", sae_ok, "", 0,
-             f"LHW={_fmt(results.get('LHW_total'))} m, limit 3.81 m"),
-        _row("Geometry feasible", results.get("geometry_feasible"), "", 0),
         _row("OVERALL CONVERGED", overall_ok, "", 0),
     ]
     _print_section("1. CONVERGENCE STATUS", status_rows)
@@ -144,23 +131,6 @@ def build_report(results):
         _row("P turn", results.get("P_turn"), "W", 3),
     ]
     _print_section("5b. FULL FLIGHT-ENVELOPE POWER SIZING", envelope_rows)
-
-    # --- Airframe geometry / SAE ---
-    remaining = results.get("remaining_space")
-    geo_rows = [
-        _row("Fuselage length L_fuse", results.get("L_fuse"), "m", 4, "working (may be grown)"),
-        _row("Fuselage face a", results.get("a"), "m", 4, "working"),
-        _row("Fuselage face b", results.get("b"), "m", 4, "working"),
-        _row("Adjusted length (+ pad)", results.get("adjusted_L"), "m", 4),
-        _row("Forward fuselage length", results.get("forward_fuse_L"), "m", 4),
-        _row("Aircraft width ac_W (span)", results.get("ac_W"), "m", 4),
-        _row("Aircraft height ac_H", results.get("ac_H"), "m", 4),
-        _row("L + W + H total", results.get("LHW_total"), "m", 4, "SAE limit 3.81 m"),
-        _row("Remaining SAE space", remaining, "m", 4,
-             "negative => over limit" if (remaining is not None and remaining < 0) else ""),
-        _row("L_fuse max under SAE", results.get("L_fuse_max_sae"), "m", 4),
-    ]
-    _print_section("6. FUSELAGE GEOMETRY & SAE BOX", geo_rows)
 
     print()
     print("Report complete.")

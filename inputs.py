@@ -6,7 +6,7 @@ def get_inputs():
         # Design variables/project specific inputs - leave empty if not used for comp
         'clmax'                 : 1.5*0.85,          # Clmax
         'WTO_max'               : 4.0*9.81,         # Max Takeoff weight guess (N)
-        'WTO_min'               : 2.0*9.81,         # Min Takeoff weight guess (N)
+        'WTO_min'               : 0*9.81,         # Min Takeoff weight guess (N)
         'RFC'                   : 0.03,         # Runway Friction Coefficient
         'Ld'                    : 121.92,         # Landing Distance (m)
         'WTO'                   : 4.0*9.81,         # Initial Takeoff weight guess (N)
@@ -24,7 +24,7 @@ def get_inputs():
         'L_LG'                  : 0.15,         # Landing gear length (m)
         'dto'                   : 20,          # Takeoff distance (m)
         'n_blade'               : 2,           # Number of blades
-        'n_prop_FF'                : 1,           # Number of propellers
+        'n_prop_FF'             : 1,           # Number of propellers
         
         # Full flight-envelope power sizing (climb/cruise/ceiling/turn) --
         # placeholder values carried over from the MATLAB toolchain;
@@ -40,12 +40,11 @@ def get_inputs():
         'eta_prop'              : 0.75,             # Propeller efficiency, forward flight [PLACEHOLDER]
         
         # VTOL flight specific inputs
-        'RoC_VTOL'              : 1.0,               # Rate of climb for VTOL operation (m/s)
+        'RoC_VTOL'              : 2.5,               # Rate of climb for VTOL operation (m/s)
         's_ratio'               : 1.3,              # Ratio of total aircraft surface area to wing area
         'n_prop_lift'           : 4,                # Number of lift props
 
-        #SAE specific inputs
-        'SAE_limit'             : 3.81,      # Greatest possible value of L+W+H of the aircraft (m)
+        
 
         # Constants
         'k_rho_wing'            : 0.00125,
@@ -80,7 +79,9 @@ def get_inputs():
 '''NOTES
 Wing airfoil - NACA2415
 Stab airfoils - NACA0012
-C_tip_min_raw'         : ,           # Min chord length (unused input
+C_tip_min_raw'         : ,           # Min chord length (unused input)
+#SAE specific inputs
+        'SAE_limit'             : 3.81,      # Greatest possible value of L+W+H of the aircraft (m)
 '''
 '''inputs'''
 # clmax = float(input("Clmax = "))

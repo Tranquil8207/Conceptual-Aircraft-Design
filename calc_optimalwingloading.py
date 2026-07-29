@@ -69,9 +69,10 @@ def ws_sweep_and_optimize(params, results, WS_min=10, WS_max=200, n_points=500):
     results['TW_opt'] = TW_opt
     results['WLfinal'] = results['WS_opt']
 
-    #We finally call our obtained values
-    return {'WS_max_stall': WS_max_stall,'WL_Final': WS_opt,'TW_opt': TW_opt}
+    #We finally call our obtained values (old code -)
+    #return {'WS_max_stall': WS_max_stall,'WL_Final': WS_opt,'TW_opt': TW_opt}
 
-    #Below code is the generated one. I think most of these are pure clutter so I commented it off. Take if you'd need. 
-    #return {'WS_sweep': WS_sweep,'curves': curves,'TW_envelope': TW_envelope,'WS_max_stall': WS_max_stall,'WL_Final': WS_opt,'TW_opt': TW_opt}
+    #Below code is the generated one. I think most of these are pure clutter so I commented it off. Take if you'd need
+    #Code used for generating the constraint analysis plot 
+    return {'WS_sweep': WS_sweep,'curves': curves,'TW_envelope': TW_envelope,'WS_max_stall': WS_max_stall,'WL_Final': WS_opt,'TW_opt': TW_opt}
     
