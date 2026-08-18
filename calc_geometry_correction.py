@@ -8,7 +8,7 @@ def correct_geometry(params, results):
     b = results['b']
     l_tail = results['l_tail']
     ms = params['ms']
-    H = max(a,b)
+    H = max(a,b) + params['L_LG'] + results['span_ht']
     L_fuse_max = sae_limit - length_pad - ms - H
 
     if l_tail > L_fuse:

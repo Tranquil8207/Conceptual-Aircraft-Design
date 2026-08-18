@@ -1,7 +1,15 @@
-# Conceptual-Aircraft-Design
-From Anish,
-Cd into the Conceptual-Aircraft-Design folder then use the command to run the tool chain
-    python process.py 
-Make sure you have set inputs in inputs.py, remember they are hardcoded not dynamic so you need to change the file to run the code.
-NOTE 1 - The calculations still use a lot of approximations so they cannot be trusted as of now.
-NOTE 2 - Pmax calculations are currently broken, the values it gives are absurdly low please take them with a ton of salt. We are working to make them better.
+# Conceptual Aircraft Design
+
+Free-sizing toolchain: Poelma-style weight loop, Sadraey structure, Tyan propulsion mass.
+
+Edit `inputs.py`, then run:
+
+```
+python process.py
+```
+
+`inputs.py` is a single hardcoded `params` dict. The loop in `process.py` sizes the wing, geometry, tails, forward-flight power / T/W, propeller diameter, and analytical empty weight, then damps `WTO` until `|W_computed - WTO_guess| / WTO_guess` closes. After the first wing size, `calc_optimalwingloading.py` picks `WLfinal` from the envelope sweep and the wing is resized; there is no constraint-diagram plot.
+
+Optional: VTOL formulae (`use_vtol`, default off) add lift-plant power and Tyan lift-motor mass.
+
+Dependencies: `numpy`, `tabulate`.

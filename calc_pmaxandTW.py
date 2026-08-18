@@ -1,8 +1,6 @@
-import math
 import calc_pmaxandTW_helpers as helper
 
 def pmax(params,results):
-    k = helper.calc_K(params, results)
     helper.TW_takeoff(params,results)
     results['v_TO_stall'] = ((2*results['WLfinal'])/(params['rho_air']*params['clmax']))**0.5
     results['Vlo'] = 1.1*results['v_TO_stall']
@@ -12,17 +10,13 @@ def pmax(params,results):
     """Full flight-envelope thrust-to-weight and power sizing.
 
 Adds the climb / cruise / service-ceiling / steady-turn segments on top
-of the existing ground-roll takeoff sizing in calc_pmaxandTW.py, then
-takes the governing (max power) segment across the whole envelope.
-Written as one function per flight segment (matching the standalone
-per-segment style pulled from the MATLAB conversion), each taking wing
-loading and aspect ratio explicitly rather than reading off a shared
-results dict. power_requirement() at the bottom wires them together and
-is what process.py actually calls.
-Two things from that MATLAB conversion are intentionally NOT here:
-  - TW_takeoff() / a Gudmundsson placeholder takeoff formula -- takeoff
-    power already comes from calc_pmaxandTW.py's dto/Ld-based estimate,
-    which uses your real competition takeoff/landing distances.
+of the ground-roll takeoff sizing, then takes the governing (max power)
+segment across the whole envelope.
+Written as one function per flight segment, each taking wing loading
+and aspect ratio explicitly rather than reading off a shared results
+dict. power_requirement() at the bottom wires them together and is
+what process.py actually calls.
+  - TW_takeoff() -- takeoff power comes from the dto/Ld-based estimate.
   - SA_stall_limit() -- same equation, kept below as stall_limited_ws().
 ----------------------End of Maxon's changes-------------------------------
 addendum(from anish) - spun off all the flight segment based TW calcs as a helper function
@@ -38,7 +32,7 @@ def power_requirement(params, results):
 
     """Call each segment function, convert T/W -> power (eq. 3-2), and
     pick the governing (max power) segment. Must run AFTER
-    calc_pmaxandTW() each iteration (uses its 'pmax' as takeoff power)."""
+    pmax() each iteration (uses its 'pmax' as takeoff power)."""
     WS = results['WLfinal']
     AR = results['AR_wing']
 
@@ -55,15 +49,15 @@ def power_requirement(params, results):
     results['TW_ceiling'] = tw_ceiling
     results['TW_turn'] = tw_turn
 
-    # Power required per segment, eq. (3-2): P/W = (T/W * V) / eta_prop
-    W_To_N = results['WTO_guess']
+    # Power required per segment, eq. (3-2): P/W = (T/W * V) / eta_prop, we multiple P/W with W to get P alone
+    Weight = results['WTO_guess']
     eta_prop = params['eta_prop']
-    P_climb = tw_climb * W_To_N * V_climb / eta_prop
-    P_cruise = tw_cruise * W_To_N * params['V_cruise'] / eta_prop
-    P_ceiling = tw_ceiling * W_To_N * V_climb / eta_prop
-    P_turn = tw_turn * W_To_N * params['V_cruise'] / eta_prop
+    P_climb = tw_climb * Weight * V_climb / eta_prop
+    P_cruise = tw_cruise * Weight * params['V_cruise'] / eta_prop
+    P_ceiling = tw_ceiling * Weight * V_climb / eta_prop
+    P_turn = tw_turn * Weight * params['V_cruise'] / eta_prop
 
-    # Takeoff power already computed by calc_pmaxandTW.py from real dto/Ld data.
+    # Takeoff power already computed by pmax() from dto/Ld.
     P_takeoff = results['pmax_initial']
 
     segments = {

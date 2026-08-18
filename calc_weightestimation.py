@@ -1,4 +1,4 @@
-def weight_estimation(params,results):
+def weight_estimation(params, results):
     '''Sadraey formulae'''
     W_wing = results['S_wing']*results['C_wing_adj']*params['rho_mat']*params['k_rho_wing']*((params['TR'])**0.04)*params['g']*((results['AR_wing']*params['n_ult'])**0.6)*params['wing_thickness_factor']
     W_ht = results['S_ht']*results['C_ht']*params['rho_mat']*params['k_rho_ht']*((params['TR'])**0)*((params['Vht'])**0.3)*params['g']*params['stab_thickness_factor']*((params['AR_ht']*params['n_ult'])**0.6)*((results['C_elevator']/results['C_ht'])**0.4)
@@ -11,20 +11,25 @@ def weight_estimation(params,results):
     W_prop = 670.644*(results['dprop'])**2.784'''
 
     '''Tyan Formulae'''
-    p_ff = results.get('pmax',0)
-    p_vtol = results.get('Preq_VTOL',0)
-    Pmax = max(p_ff,p_vtol)
-    nprop = params['n_prop_FF'] + params['n_prop_lift']
-    W_motor_FF = params['F1'] * (results['pmax'] ** params['E1']) * (params['Vmax'] ** params['E2']) * results['pmax'] * params['g'] * 0.001
-    W_motor_lift = params['F1'] * (results['Preq_VTOL'] ** params['E1']) * (params['Vmax'] ** params['E2']) * results['Preq_VTOL'] * params['g'] * 0.001
-    W_motor = W_motor_lift + W_motor_FF
+    p_ff = results.get('pmax', 0)
+    if params.get('use_vtol'):
+        p_vtol = results.get('Preq_VTOL', 0)
+        nprop = params['n_prop_FF'] + params.get('n_prop_lift', 0)
+        W_motor_FF = params['F1'] * (p_ff ** params['E1']) * (params['Vmax'] ** params['E2']) * p_ff * params['g'] * 0.001
+        W_motor_lift = params['F1'] * (p_vtol ** params['E1']) * (params['Vmax'] ** params['E2']) * p_vtol * params['g'] * 0.001
+        W_motor = W_motor_lift + W_motor_FF
+        Pmax = max(p_ff, p_vtol)
+    else:
+        nprop = params['n_prop_FF']
+        W_motor = params['F1'] * (p_ff ** params['E1']) * (params['Vmax'] ** params['E2']) * p_ff * params['g'] * 0.001
+        W_motor_FF = W_motor
+        W_motor_lift = 0.0
+        Pmax = p_ff
     W_esc = params['F_esc'] * (Pmax ** params['E_esc']) * params['g'] * 0.001
     W_prop = (6.514e-3 * 1.0 * 15.0 * nprop * (params['n_blade']**0.391) * ((results['dprop'] * Pmax / (1000.0 * nprop)) ** 0.782)) * params['g'] * 0.001
-    '''Battery weight'''
-    W_batt = 0.500*9.81
-    
-    '''Ancilliary component weight'''
-    W_ancilliary = 0.500*9.81
+
+    W_batt = params['W_batt_kg'] * params['g']
+    W_ancilliary = params['W_ancillary_kg'] * params['g']
 
     '''Correction for underestimation of sadraey formulae'''
     W_wing = W_wing*1.45
@@ -32,5 +37,25 @@ def weight_estimation(params,results):
     W_ht = W_ht*1.75
     W_vt = W_vt*1.85
 
-    '''Total weight adjusted with a build factor'''
-    results['W_computed'] = (W_wing + W_ht + W_vt + W_fus + W_LG + W_motor + W_esc + W_prop + W_batt + W_ancilliary)*1.20
+    W_structure = W_wing + W_ht + W_vt + W_fus + W_LG
+    W_propulsion = W_motor + W_esc + W_prop
+    W_empty = (W_structure + W_propulsion + W_batt + W_ancilliary) * params['build_factor']
+    W_payload = params['payload_kg'] * params['g']
+
+    results['W_wing'] = W_wing
+    results['W_ht'] = W_ht
+    results['W_vt'] = W_vt
+    results['W_fus'] = W_fus
+    results['W_LG'] = W_LG
+    results['W_motor'] = W_motor
+    results['W_motor_FF'] = W_motor_FF
+    results['W_motor_lift'] = W_motor_lift
+    results['W_esc'] = W_esc
+    results['W_prop'] = W_prop
+    results['W_batt'] = W_batt
+    results['W_ancilliary'] = W_ancilliary
+    results['W_structure'] = W_structure
+    results['W_propulsion'] = W_propulsion
+    results['W_empty'] = W_empty
+    results['W_payload'] = W_payload
+    results['W_computed'] = W_empty + W_payload

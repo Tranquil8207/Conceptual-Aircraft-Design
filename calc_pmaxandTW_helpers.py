@@ -1,6 +1,5 @@
 '''This is where the helper functions for the new power calcs live'''
 import math
-import numpy as np
 
 #We calculate drag factor 
 def calc_K(params,results):
@@ -9,8 +8,7 @@ def calc_K(params,results):
 
 #We calculate stall limited wing loading using stall speed as the parameter
 def stall_limited_ws(AR_wing, params,k):
-    """Upper bound on wing loading from stall speed -- eq. (2-55).
-    Feed back as an optimizer constraint (WS <= this), not applied here."""
+    """Upper bound on wing loading from stall speed -- eq. (2-55)."""
     CL_max_3D = 0.9 * params['clmax'] * math.cos(params['sweep_c4'])
     stall_limited_WL = 0.5 * params['rho_air'] * params['V_stall'] ** 2 * CL_max_3D
     return stall_limited_WL
@@ -46,4 +44,3 @@ def TW_turn(W_S, AR_wing, params,k):
     q_turn = 0.5 * params['rho_air'] * params['V_cruise'] ** 2
     TW_turn = q_turn * (params['CD_min'] / W_S + k * (n_turn / q_turn) ** 2 * W_S)
     return TW_turn
-

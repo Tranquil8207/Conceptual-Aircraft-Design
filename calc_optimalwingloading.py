@@ -1,4 +1,3 @@
-import math
 import numpy as np
 import calc_pmaxandTW_helpers as helper
 
@@ -12,8 +11,6 @@ def ws_sweep(params, results):
 def ws_sweep_and_optimize(params, results, WS_min=10, WS_max=200, n_points=500):
     AR_wing = results['AR_wing']
     k = helper.calc_K(params, results)
-    #This part below is needed as this is our original Wing Loading. Like, the Python file one from calc_wingloading.py
-    WLfinal_actual = results.get('WLfinal')
 
     WS_sweep = np.linspace(WS_min, WS_max, n_points)
     TW_takeoff_array = np.zeros_like(WS_sweep)
@@ -22,7 +19,7 @@ def ws_sweep_and_optimize(params, results, WS_min=10, WS_max=200, n_points=500):
     TW_ceiling_array = np.zeros_like(WS_sweep)
     TW_turn_array = np.zeros_like(WS_sweep)
 
-    #Assume here we have a table where the entire first column is just the wing loading values, from 10 to 200, with 500 points in between. Decimals.
+    #Assume here we have a table where the entire first column is just the wing loading values, from 10 to 200, with 500 points in between (including decimals if any)
     for i, WS in enumerate(WS_sweep):
         results['WLfinal'] = WS
         helper.TW_takeoff(params, results)
@@ -30,14 +27,11 @@ def ws_sweep_and_optimize(params, results, WS_min=10, WS_max=200, n_points=500):
 
         tw_climb_val, V_climb = helper.TW_climb(WS, AR_wing, params, k)
         TW_climb_array[i] = tw_climb_val
+        results['V_climb'] = V_climb
 
         TW_cruise_array[i] = helper.TW_cruise(WS, AR_wing, params, k)
         TW_ceiling_array[i] = helper.TW_ceiling(AR_wing, params, V_climb, k)
         TW_turn_array[i] = helper.TW_turn(WS, AR_wing, params, k)
-
-    #We're done with array, now we bring back our original W/S
-    if WLfinal_actual is not None:
-        results['WLfinal'] = WLfinal_actual
 
     #Each of the Thrust to Weight v/s Wing Loading curves are added to a dictionary
     curves = {'Takeoff': TW_takeoff_array,'Climb': TW_climb_array,'Cruise': TW_cruise_array,'Ceiling': TW_ceiling_array,'Turn': TW_turn_array}
@@ -45,9 +39,8 @@ def ws_sweep_and_optimize(params, results, WS_min=10, WS_max=200, n_points=500):
     #We select the maximum of all the Thrust to Weight v/s Wing Loading curves
     TW_envelope = np.max(np.vstack(list(curves.values())), axis=0)
 
-    #And constrain it by our maximum stall thrust to weight.
-    WS_max_stall = helper.stall_limited_ws(AR_wing, params, k)
-    WS_ceiling = WS_max_stall
+    # Stall-speed cap on wing loading (not service-ceiling T/W).
+    WS_ceiling = helper.stall_limited_ws(AR_wing, params, k)
 
     #As can be seen again, feasible MUST be lesser than stall cond
     feasible = WS_sweep <= WS_ceiling
@@ -69,10 +62,4 @@ def ws_sweep_and_optimize(params, results, WS_min=10, WS_max=200, n_points=500):
     results['TW_opt'] = TW_opt
     results['WLfinal'] = results['WS_opt']
 
-    #We finally call our obtained values (old code -)
-    #return {'WS_max_stall': WS_max_stall,'WL_Final': WS_opt,'TW_opt': TW_opt}
-
-    #Below code is the generated one. I think most of these are pure clutter so I commented it off. Take if you'd need
-    #Code used for generating the constraint analysis plot 
-    return {'WS_sweep': WS_sweep,'curves': curves,'TW_envelope': TW_envelope,'WS_max_stall': WS_max_stall,'WL_Final': WS_opt,'TW_opt': TW_opt}
-    
+    return {'WS_sweep': WS_sweep,'curves': curves,'TW_envelope': TW_envelope,'WS_ceiling': WS_ceiling,'WL_Final': WS_opt,'TW_opt': TW_opt}

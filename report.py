@@ -58,9 +58,11 @@ def build_report(results):
 
     # --- Convergence / status ---
     status_rows = [
-        _row("Weight residual |W-Wguess|/Wguess", delta, "—", 4,
+        _row("Weight residual |W-Wguess|/Wguess",
+             results.get("weight_residual", delta), "—", 4,
              f"limit {CHANGE}"),
-        _row("Weight closed", weight_ok, "", 0),
+        _row("Iterations", results.get("iterations"), "—", 0),
+        _row("Weight closed", results.get("weight_ok", weight_ok), "", 0),
         _row("OVERALL CONVERGED", overall_ok, "", 0),
     ]
     _print_section("1. CONVERGENCE STATUS", status_rows)
@@ -68,10 +70,30 @@ def build_report(results):
     # --- Weight ---
     wg_n, wg_kg = _n_and_kg(w_guess)
     wc_n, wc_kg = _n_and_kg(w_comp)
+    we_n, we_kg = _n_and_kg(results.get("W_empty"))
+    wp_n, wp_kg = _n_and_kg(results.get("W_payload"))
+
+    def _kg_row(label, n, note=""):
+        _, kg = _n_and_kg(n)
+        return _row(label, kg, "kg", 4, note)
+
     weight_rows = [
-        _row("WTO guess", wg_n, "N", 3, f"{_fmt(wg_kg)} kg"),
-        _row("W computed (empty build-up)", wc_n, "N", 3, f"{_fmt(wc_kg)} kg"),
-        _row("Difference (computed - guess)", (wc_n - wg_n) if (wc_n is not None and wg_n is not None) else None, "N", 3),
+        _kg_row("Wing", results.get("W_wing")),
+        _kg_row("Horiz. tail", results.get("W_ht")),
+        _kg_row("Vert. tail", results.get("W_vt")),
+        _kg_row("Fuselage", results.get("W_fus")),
+        _kg_row("Landing gear", results.get("W_LG")),
+        _kg_row("Structure sum", results.get("W_structure")),
+        _kg_row("Motors", results.get("W_motor"), "Tyan from pmax"),
+        _kg_row("ESC", results.get("W_esc")),
+        _kg_row("Propeller(s)", results.get("W_prop")),
+        _kg_row("Propulsion sum", results.get("W_propulsion")),
+        _kg_row("Battery", results.get("W_batt")),
+        _kg_row("Ancillary", results.get("W_ancilliary")),
+        _kg_row("W_empty", we_n, "structure + propulsion + batt + ancillary"),
+        _kg_row("Payload", wp_n, "inputs payload_kg"),
+        _kg_row("W_computed", wc_n, "empty + payload"),
+        _row("WTO guess", wg_kg, "kg", 4),
     ]
     _print_section("2. WEIGHT", weight_rows)
 
@@ -107,7 +129,7 @@ def build_report(results):
 
     # --- Propulsion / performance ---
     prop_rows = [
-        _row("Thrust-to-weight TW (takeoff, dto/Ld-based)", results.get("TW"), "—", 5),
+        _row("Thrust-to-weight TW (takeoff)", results.get("TW_takeoff"), "—", 5),
         _row("Stall speed (TO ref) v_TO_stall", results.get("v_TO_stall"), "m/s", 3),
         _row("Liftoff speed Vlo", results.get("Vlo"), "m/s", 3),
         _row("Governing power case", results.get("governing_case"), "", 0),
@@ -115,6 +137,8 @@ def build_report(results):
         _row("ESC weight coeff (pmax/Vmax)", results.get("esc_wt_coeff"), "—", 4),
         _row("Propeller diameter dprop", results.get("dprop"), "m", 4),
     ]
+    if results.get("Preq_VTOL") is not None:
+        prop_rows.append(_row("P required VTOL", results.get("Preq_VTOL"), "W", 3))
     _print_section("5. PROPULSION & TAKEOFF", prop_rows)
 
     # --- Full flight-envelope power sizing ---
@@ -129,6 +153,7 @@ def build_report(results):
         _row("P cruise", results.get("P_cruise"), "W", 3),
         _row("P ceiling", results.get("P_ceiling"), "W", 3),
         _row("P turn", results.get("P_turn"), "W", 3),
+        _row("Climb Velocity", results.get("V_climb"), "m/s", 3),
     ]
     _print_section("5b. FULL FLIGHT-ENVELOPE POWER SIZING", envelope_rows)
 

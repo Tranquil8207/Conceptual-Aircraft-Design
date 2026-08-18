@@ -16,4 +16,3 @@ def SAE_dimensions(params,results):
         results['remaining_space'] = sae_limit - results['LHW_total']
     else:
         results['remaining_space'] = 0.0
-akfajbfhddbbbda
