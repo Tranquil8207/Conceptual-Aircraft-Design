@@ -7,7 +7,7 @@ def correct_geometry(params, results):
     a = results['a']
     b = results['b']
     l_tail = results['l_tail']
-    ms = params['ms']
+    ms = results['ms']
     H = max(a,b) + params['L_LG'] + results['span_ht']
     L_fuse_max = sae_limit - length_pad - ms - H
 
@@ -20,7 +20,7 @@ def correct_geometry(params, results):
 
     results['L_fuse_max_sae'] = L_fuse_max
 
-    K = results['S_wing'] * (params['Vht'] * results['C_wing_adj'] + params['Vvt'] * params['ms'])
+    K = results['S_wing'] * (params['Vht'] * results['C_wing_adj'] + params['Vvt'] * results['ms'])
 
     if l_tail > L_fuse + delta and L_fuse > delta:
         target_sum = K / (L_fuse ** 2)

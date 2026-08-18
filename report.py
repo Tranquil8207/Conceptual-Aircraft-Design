@@ -177,7 +177,7 @@ def main(results=None):
     print("CONCEPTUAL AIRCRAFT DESIGN — RESULTS REPORT")
     print("=" * 48)
     if results is None:
-        results = process()
+        params, results = process()
     build_report(results)
 
 

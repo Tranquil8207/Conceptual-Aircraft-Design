@@ -5,3 +5,4 @@
 .env.example
 *.pyc
 *.html
+*.png

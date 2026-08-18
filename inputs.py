@@ -5,22 +5,23 @@ def get_inputs():
     params = {
         # --- seed / loop ---
         'WTO'                   : 4.0*9.81,         # Initial takeoff-weight guess (N)
-        'WTO_min'               : 0.0,              # Optional weight loop floor (N)
-        'WTO_max'               : 50.0*9.81,        # Optional weight loop ceiling (N)
+        'WTO_min'               : 2.0*9.81,              # Optional weight loop floor (N)
+        'WTO_max'               : 4.0*9.81,        # Optional weight loop ceiling (N)
         'payload_kg'            : 1.0,              # Design payload (kg), will not optimise this further, it will only use this hardcoded
-        'build_factor'          : 1.0,              # Optional empty-weight multiplier for further corrections (default 1.0)
+        'build_factor'          : 1.10,              # Optional empty-weight multiplier for further corrections (default 1.0)
 
         # --- wing / aero ---
-        'clmax'                 : 1.5*0.85,         # 3D-adjusted CLmax
-        'ms'                    : 1.8288,           # Design wingspan (m)
+        'clmax'                 : 2.5*0.85,         # 3D-adjusted CLmax
+        'ms'                    : 1.8288,           # Max wingspan (m)
+        'AR_max'                : 9.0,              # Aspect-ratio cap; span is reduced if b^2/S would exceed this
         'TR'                    : 0.4,              # Wing taper ratio
         'CD_min'                : 0.035,            # Parasite drag coefficient
         'e'                     : 0.8,              # Oswald efficiency
         'V_stall'               : 10.0,             # Stall-speed target (m/s)
         'V_cruise'              : 18.0,             # Cruise speed (m/s)
-        'dto'                   : 20.0,             # Takeoff ground roll (m)
+        'dto'                   : 60.0,             # Takeoff ground roll (m)
         'RFC'                   : 0.03,             # Runway friction coefficient
-        'Ld'                    : 121.92,           # Landing distance (m)
+        'Ld'                    : 90.0,             # Landing distance (m)
         'climb_ROC'             : 3.0,              # Desired climb rate (m/s)
         'ROC_ceiling'           : 0.5,              # ROC at service ceiling (m/s)
         'bank_angle'            : math.radians(45), # Design turn bank angle (rad)
@@ -39,7 +40,7 @@ def get_inputs():
 
         # --- structure (Sadraey k_rho / LG) ---
         'rho_mat'               : 700,              # Structural material density (kg/m^3)
-        'wing_thickness_factor' : 0.15,             # Wing t/c
+        'wing_thickness_factor' : 0.143,             # Wing t/c
         'stab_thickness_factor' : 0.12,             # Stabilizer t/c
         'k_rho_wing'            : 0.00125,          # Wing mass coefficient
         'k_rho_ht'              : 0.0175,           # HT mass coefficient
@@ -55,15 +56,17 @@ def get_inputs():
         # --- propulsion (Tyan) ---
         'n_prop_FF'             : 1,                # Forward-flight propeller count
         'n_blade'               : 2,                # Blades per propeller
-        'Vmax'                  : 25.2,             # Pack voltage used in Tyan motor mass (V)
+        'Vmax'                  : 18.5,             # Pack voltage used in Tyan motor mass (V)
         'F1'                    : 0.889,            # Tyan motor mass coefficient
         'E1'                    : -0.288,           # Tyan motor mass exponent on P
         'E2'                    : 0.1588,           # Tyan motor mass exponent on V
         'F_esc'                 : 0.7383*(10**(-4)),# Tyan ESC mass coefficient
         'E_esc'                 : 0.8854,           # Tyan ESC mass exponent
+        'Battery_capacity'      : 2200/1000,        # Battery Capacity in Ah (converted inline from MAh)
+        'Avionics_reserve'      : 0.20,             # Percentage of battery power reserved for hotel load (mainly avionics but could be anything else)
 
         # --- battery and ancilliary weights (mainly used to hardcode battery weight) ---
-        'W_batt_kg'             : 0.500,            # Battery mass (kg)
+        'W_batt_kg'             : 0.282,            # Battery mass (kg)
         'W_ancillary_kg'        : 0.500,            # Ancillary weight (used to account for weights not directly estimated in the formulae we use) (kg)
 
         # --- optional modules (default unused / off) ---
@@ -78,7 +81,7 @@ def get_inputs():
         'rho_air'               : 1.225,            # Sea-level air density (kg/m^3)
 
         # ---SAE specific---
-        'SAE_limit'                   : 0 ,                   # SAE specific L+W+H constraint
+        'SAE_limit'             : 0 ,               # SAE specific L+W+H constraint
     }
 
     results = {}
@@ -86,6 +89,6 @@ def get_inputs():
 
 
 '''NOTES
-Wing airfoil seed - NACA2415
+Wing airfoil seed - Eppler 420
 Stab airfoils seed - NACA0012
 '''

@@ -4,7 +4,7 @@ def weight_estimation(params, results):
     W_ht = results['S_ht']*results['C_ht']*params['rho_mat']*params['k_rho_ht']*((params['TR'])**0)*((params['Vht'])**0.3)*params['g']*params['stab_thickness_factor']*((params['AR_ht']*params['n_ult'])**0.6)*((results['C_elevator']/results['C_ht'])**0.4)
     W_vt = results['S_vt']*results['C_vt']*params['rho_mat']*params['k_rho_vt']*((params['TR'])**0)*((params['Vvt'])**0.2)*params['g']*params['stab_thickness_factor']*((params['AR_vt']*params['n_ult'])**0.6)*((results['C_rudder']/results['C_vt'])**0.4)
     W_fus = results['L_fuse']*params['rho_mat']*params['k_rho_fus']*params['g']*((params['n_ult'])**0.25)*(results['a']**2)
-    W_LG = params['KL'] * params['K_ret'] * params['k_LG'] * results['WTO_guess'] * (params['L_LG'] / params['ms']) * (params['n_LG'] ** 0.20)
+    W_LG = params['KL'] * params['K_ret'] * params['k_LG'] * results['WTO_guess'] * (params['L_LG'] / results['ms']) * (params['n_LG'] ** 0.20)
     '''Jae Hyun formulae
     W_motor = (-0.922*10**(-5))*(results['pmax']**2) + 0.196*(results['pmax']) + 23.342
     W_esc = (0.324*10**(-2))*results['esc_wt_coeff']**2 + 0.847*(results['esc_wt_coeff']) + 1.532

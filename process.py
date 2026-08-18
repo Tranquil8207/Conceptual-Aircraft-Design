@@ -7,6 +7,7 @@ from calc_pmaxandTW import pmax, power_requirement
 from calc_dprop import calc_dprop
 from calc_weightestimation import weight_estimation
 from calc_optimalwingloading import ws_sweep_and_optimize
+from plot_helpers import plot_all
 
 
 def process():
@@ -56,11 +57,12 @@ def process():
     results['iterations'] = i + 1
     results['weight_residual'] = delta
     results['weight_ok'] = delta <= change
-    return results
+    plot_all(params, results, show=False)
+    return params, results
 
 
 if __name__ == '__main__':
     from report import main as print_report
 
-    results = process()
+    params, results = process()
     print_report(results=results)

@@ -61,5 +61,9 @@ def ws_sweep_and_optimize(params, results, WS_min=10, WS_max=200, n_points=500):
     results['WS_opt'] = WS_opt
     results['TW_opt'] = TW_opt
     results['WLfinal'] = results['WS_opt']
+    results['WS_sweep'] = WS_sweep
+    results['TW_curves'] = curves
+    results['TW_envelope'] = TW_envelope
+    results['WS_stall_limit'] = WS_ceiling
 
     return {'WS_sweep': WS_sweep,'curves': curves,'TW_envelope': TW_envelope,'WS_ceiling': WS_ceiling,'WL_Final': WS_opt,'TW_opt': TW_opt}
